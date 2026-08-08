@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src https://www.minecraft.net https://minecraft.net; font-src 'self'">
+    <title>Linux Minecraft Launcher</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <aside id="sidebar">
+      <nav>
+        <button class="nav-btn active" data-icon="Resources/icon-home.png" data-lbl="Home" data-page="home">Home</button>
+        <button class="nav-btn" data-icon="Resources/icon-news.png" data-lbl="News" data-page="news">News</button>
+        <button class="nav-btn" data-icon="Resources/icon-mods.png" data-lbl="Mods" data-page="mods">Mods</button>
+        <div class="sidebar-spacer"></div>
+        <button class="nav-btn" data-icon="Resources/icon-log.png" data-lbl="Log" data-page="log">Log</button>
+        <button class="nav-btn" data-icon="Resources/icon-settings.png" data-lbl="Settings" data-page="settings">Settings</button>
+        <button class="nav-btn" data-icon="Resources/icon-folder.png" data-lbl="Folder" data-page="folder">Folder</button>
+      </nav>
+      <div class="version-label">N/A</div>
+    </aside>
+
+    <section id="content">
+      <div id="background"></div>
+
+      <main id="screen">
+        <div id="view">
+
+          <section class="page active" id="page-home"></section>
+
+          <section class="page page-dark" id="page-news">
+            <header class="page-head">
+              <span class="page-title">News</span>
+              <div class="tabs"><button class="tab active">Minecraft</button></div>
+            </header>
+            <div class="page-scroll">
+              <div id="news-grid"></div>
+              <div id="news-status" class="page-status"></div>
+              <div class="load-row">
+                <button id="news-more" class="m-btn">Load more articles</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="page page-dark" id="page-mods">
+            <header class="page-head">
+              <span class="page-title">Mods</span>
+              <div class="tabs">
+                <button class="tab active" data-tab="mods-available">Mods</button>
+                <button class="tab" data-tab="mods-installed">Installed</button>
+                <button class="tab" data-tab="mods-faq">FAQ</button>
+              </div>
+            </header>
+            <div class="page-scroll">
+              <div id="mods-available" class="tab-pane active">
+                <div id="mods-grid"></div>
+                <div id="mods-status" class="page-status"></div>
+              </div>
+              <div id="mods-installed" class="tab-pane">
+                <div class="page-status">No mods installed. Drop <b>.so</b> files into the <b>mods</b> folder.</div>
+              </div>
+              <div id="mods-faq" class="tab-pane">
+                <div class="card-text">
+                  <p><b>Welcome to our experimental mods section.</b></p>
+                  <p>
+                    Managing mods is not yet supported. To contribute your mod, please open a pull request on
+                    <a href="https://github.com/minecraft-linux/mcpelauncher-moddb" target="_blank">minecraft-linux/mcpelauncher-moddb</a>.
+                  </p>
+                  <p>
+                    Mods are a collection of <span class="mono">.so</span> files placed inside the
+                    <span class="mono">mods</span> folder within your data root (see Settings &rsaquo; Storage).
+                    The <span class="mono">mods</span> folder does not exist by default. Extract zip files directly
+                    into it without creating subfolders.
+                  </p>
+                  <p class="err">Do not report crashes to the launcher&rsquo;s issue tracker when mods are enabled.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="page page-dark" id="page-log">
+            <header class="page-head">
+              <span class="page-title">Game Log</span>
+            </header>
+            <div class="log-bar">
+              <button id="log-copy" class="m-btn" title="Copy log">
+                <img src="Resources/icon-copy.png" alt="copy" />Copy log
+              </button>
+            </div>
+            <div class="page-scroll log-scroll">
+              <div id="log-view" class="log-view"></div>
+            </div>
+          </section>
+
+          <section class="page page-dark" id="page-settings">
+            <header class="page-head">
+              <span class="page-title">Settings</span>
+              <div class="tabs">
+                <button class="tab active" data-tab="set-general">General</button>
+                <button class="tab" data-tab="set-storage">Storage</button>
+                <button class="tab" data-tab="set-versions">Versions</button>
+                <button class="tab" data-tab="set-dev">Dev</button>
+                <button class="tab" data-tab="set-about">About</button>
+              </div>
+            </header>
+            <div class="page-scroll">
+              <div id="set-general" class="tab-pane active">
+                <div class="section-title">Launcher</div>
+
+                <label class="check"><input type="checkbox" id="opt-hide" /><span class="box"></span>Hide the launcher when starting the game</label>
+                <label class="check"><input type="checkbox" id="opt-log" /><span class="box"></span>Disable the GameLog</label>
+                <label class="check"><input type="checkbox" id="opt-updates" /><span class="box"></span>Enable checking for updates (on opening)</label>
+                <label class="check"><input type="checkbox" id="opt-banners" /><span class="box"></span>Show all notification banners</label>
+                <label class="check"><input type="checkbox" id="opt-exitbtn" /><span class="box"></span>Show exit button in navigation bar</label>
+                <label class="check"><input type="checkbox" id="opt-chromeos" /><span class="box"></span>ChromeOS Mode</label>
+                <label class="check"><input type="checkbox" id="opt-trial" /><span class="box"></span>Trial Mode</label>
+
+                <div class="section-title" style="margin-top:20px;">Actions</div>
+                <button class="m-btn wide" id="trouble-open">Run Troubleshooter</button>
+                <button class="m-btn wide" id="gamepad-open">Open Gamepad Tool</button>
+                <button class="m-btn wide" id="sign-out">Sign Out</button>
+              </div>
+              <div id="set-storage" class="tab-pane">
+                <div class="section-title">Game data</div>
+                <div class="path-box"><span id="game-data-dir">Loading...</span></div>
+                <button class="m-btn" id="open-data-dir">Open in file manager</button>
+                <div class="section-title" style="margin-top:24px;">Profiles</div>
+                <div class="path-box"><span id="profile-dir-show">default</span></div>
+                <button class="m-btn" id="edit-profile-btn">Edit profile...</button>
+              </div>
+              <div id="set-versions" class="tab-pane">
+                <div class="warn-box" style="background:#4a2f05;">You&rsquo;re most likely mistaken here — to download and install different versions, open the launcher&rsquo;s Home page and click the Profile Edit pencil icon.</div>
+                <div class="field-label">Package name</div>
+                <input class="m-field" id="ver-package" value="com.mojang.minecraftpe" />
+                <button class="m-btn" id="ver-fetch" style="margin:8px 0 16px;">Fetch available versions</button>
+                <div class="field-label">Virtual Version Code</div>
+                <div class="row-gap">
+                  <select class="m-field" id="ver-code">
+                    <option value="1000000000">1000000000 (default)</option>
+                  </select>
+                </div>
+                <div class="field-label">Supported architectures</div>
+                <select class="m-field" id="ver-arch">
+                  <option>Self</option>
+                  <option>All</option>
+                  <option>x86_64</option>
+                  <option>arm64-v8a</option>
+                  <option>x86</option>
+                  <option>armeabi-v7a</option>
+                </select>
+                <div id="ver-listing" class="page-status">No versions fetched yet.</div>
+              </div>
+              <div id="set-dev" class="tab-pane">
+                <div class="section-title">Developer</div>
+                <label class="check"><input type="checkbox" id="opt-devlog" /><span class="box"></span>Log all developer messages</label>
+                <div class="section-title" style="margin-top:20px;">Screen previews</div>
+                <button class="m-btn wide" data-screen="info">Preview: Info screen</button>
+                <button class="m-btn wide" data-screen="unsupported">Preview: Unsupported screen</button>
+                <button class="m-btn wide" data-screen="changelog">Preview: Changelog</button>
+                <button class="m-btn wide" data-screen="unlock">Preview: Unlock</button>
+              </div>
+              <div id="set-about" class="tab-pane">
+                <div class="section-title">Unofficial launcher for Minecraft</div>
+                <div class="page-status">
+                  Version: <b id="about-version"></b><br />
+                  Electron: <b id="about-electron"></b><br />
+                  A Windows/Linux/OS X launcher for Minecraft: PE.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="page page-dark" id="page-folder">
+            <div class="page-scroll center">
+              <div class="folder-card">
+                <img src="Resources/icon-folder.png" alt="" />
+                <div class="folder-title">Game Data Folder</div>
+                <div class="page-status" id="folder-path">Loading...</div>
+                <button class="m-btn" id="open-folder-btn">Open Folder</button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        <footer id="panel">
+          <div class="profile">
+            <div id="version-select" class="combo" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false">
+              <span id="version-label">Latest Release</span>
+              <svg class="chevron" viewBox="0 0 13 6"><path d="M0 0l6.5 6L13 0" fill="none" stroke="#bbb" stroke-width="1.5"/></svg>
+            </div>
+            <div id="version-menu" class="combo-menu"></div>
+            <button id="edit-profile" class="edit-btn" title="Edit profile">
+              <img src="Resources/icon-edit.svg" alt="" />
+            </button>
+          </div>
+          <button id="download-btn" class="pixel-btn">
+            <span id="play-main">DOWNLOAD AND PLAY</span>
+          </button>
+        </footer>
+
+        <div id="progress" class="progress">
+          <span id="progress-label">Please wait...</span>
+        </div>
+      </main>
+    </section>
+
+    <!-- ============ Login screen ============ -->
+    <div class="overlay-screen" id="login-screen">
+      <div class="dialog">
+        <div class="dialog-title">Sign in</div>
+        <p class="dialog-text">
+          To use this launcher, you must either purchase Minecraft Android or claim the free
+          Minecraft Trial on Google Play and sign in.<br /><br />
+          The free Minecraft (ChromeOS) Trial Mode can be enabled after sign in inside Settings.
+        </p>
+        <button id="login-google" class="pixel-btn" style="width: 100%; margin: 12px 0 0;">
+          <span class="btn-main">SIGN IN</span>
+        </button>
+        <div class="dialog-links">
+          <button class="t-btn" id="login-trial">USE TRIAL .APK</button>
+          <button class="t-btn" id="login-help">GET WS HELP</button>
+        </div>
+      </div>
+      <div class="dialog-foot">
+        This is an unofficial Linux launcher for the Minecraft Bedrock codebase.<br />
+        This project is not affiliated with Minecraft, Mojang or Microsoft.
+      </div>
+    </div>
+
+    <!-- ============ Changelog screen ============ -->
+    <div class="overlay-screen" id="changelog-screen">
+      <header class="ov-head">
+        <span class="ov-title">Changelog</span>
+        <div class="tabs"><button class="tab active">Changelog</button></div>
+      </header>
+      <div class="ov-scroll">
+        <div class="changelog-text">
+          <b>Welcome to the new Minecraft Linux Launcher Update</b><br /><br />
+          • Fully redesigned dark interface<br />
+          • News feed from Minecraft.net<br />
+          • Improved mod support &amp; profile editing<br />
+          • Bug fixes and performance improvements
+        </div>
+      </div>
+      <footer class="ov-foot">
+        <button class="m-btn" id="changelog-continue">Continue</button>
+      </footer>
+    </div>
+
+    <!-- ============ Unlock screen ============ -->
+    <div class="overlay-screen" id="unlock-screen">
+      <header class="ov-head">
+        <span class="ov-title">Unlock Credentials</span>
+      </header>
+      <div class="ov-pad">
+        <p class="dialog-text">
+          This is not your Google Account Password. If you don&rsquo;t want to type it every time you open this
+          Launcher, check "Continue with invalid credentials".
+        </p>
+        <label class="check"><input type="checkbox" id="unlock-invalid" /><span class="box"></span>Continue with invalid credentials</label>
+        <div class="ov-mid"></div>
+        <div class="warn-box" id="unlock-warning">Password is invalid</div>
+        <div class="field-label">Password</div>
+        <input type="password" class="m-field" id="unlock-pwd" />
+      </div>
+      <footer class="ov-foot">
+        <button class="m-btn" id="unlock-continue">Continue</button>
+      </footer>
+    </div>
+
+    <!-- ============ Error / Unsupported screens ============ -->
+    <div class="overlay-screen" id="message-screen">
+      <header class="ov-head">
+        <span class="ov-title" id="msg-title">Info</span>
+      </header>
+      <div class="ov-scroll message-text" id="msg-body"></div>
+      <footer class="ov-foot">
+        <button class="m-btn" id="msg-ok">OK</button>
+      </footer>
+    </div>
+
+    <!-- ============ Gamepad tool dialog ============ -->
+    <div class="overlay-dialog" id="gamepad-tool">
+      <header class="ov-head">
+        <span class="ov-title">Gamepad Tool</span>
+      </header>
+      <div class="ov-pad">
+        <div id="gamepad-empty">
+          <div class="gp-empty"><b>No Gamepads Found!</b><br />Ensure the gamepad is connected correctly.</div>
+        </div>
+        <div id="gamepad-content" style="display:none;">
+          <div class="field-label">GUID</div>
+          <input class="m-field" readonly value="03000000-0000-0000-0000-000000000000" />
+          <div class="field-label">Has Mapping</div>
+          <input class="m-field" readonly value="False" />
+          <div class="gp-hint">Connect a gamepad and press a button to capture its binding.</div>
+        </div>
+      </div>
+      <footer class="ov-foot">
+        <button class="m-btn" id="gamepad-close">Close</button>
+      </footer>
+    </div>
+
+    <!-- ============ Troubleshooter dialog ============ -->
+    <div class="overlay-dialog" id="troubleshooter">
+      <header class="ov-head">
+        <span class="ov-title">Troubleshooter</span>
+      </header>
+      <div class="ov-pad">
+        <p class="dialog-text">This tool checks common problems with your installation.</p>
+        <button class="m-btn wide" id="trouble-run">Find issues</button>
+        <div id="trouble-results" class="trouble-results"></div>
+      </div>
+      <footer class="ov-foot">
+        <button class="m-btn" id="trouble-close">Close</button>
+      </footer>
+    </div>
+
+    <!-- ============ Profile editor dialog ============ -->
+    <div class="overlay-dialog wide" id="profile-editor">
+      <header class="ov-head">
+        <span class="ov-title" id="profile-title">Edit profile</span>
+        <button class="m-btn" id="profile-delete">Delete</button>
+      </header>
+      <div class="ov-pad">
+        <div class="field-label">Name</div>
+        <input class="m-field" id="profile-name" placeholder="unamed" />
+        <div class="field-label">Version</div>
+        <select class="m-field" id="profile-version">
+          <option value="latest">Latest Release (Google Play)</option>
+          <option value="1.21">1.21</option>
+          <option value="1.20">1.20</option>
+        </select>
+        <label class="check" style="margin-top:12px;"><input type="checkbox" id="profile-datadir" /><span class="box"></span>Data directory</label>
+        <div class="row-gap" id="profile-dir-row">
+          <input class="m-field" id="profile-dir" disabled placeholder="path" />
+          <button class="m-btn" id="profile-dir-pick" disabled>...</button>
+        </div>
+        <label class="check" style="margin-top:12px;"><input type="checkbox" id="profile-patch" /><span class="box"></span>Texture Patch</label>
+      </div>
+      <footer class="ov-foot">
+        <button class="m-btn" id="profile-cancel">Cancel</button>
+        <button class="m-btn accent" id="profile-save">Save</button>
+      </footer>
+    </div>
+
+    <!-- ============ Mod details slide-in panel ============ -->
+    <div class="mod-panel" id="mod-panel">
+      <header class="ov-head">
+        <span class="ov-title" id="mod-title">Mod</span>
+        <button class="m-btn" id="mod-close">Close</button>
+      </header>
+      <div class="ov-scroll">
+        <img id="mod-image" class="mod-banner" alt="" />
+        <div class="mod-panel-desc" id="mod-desc"></div>
+        <div class="field-label" style="margin-top:16px;">Versions</div>
+        <div id="mod-versions" class="mod-rows"></div>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>
