@@ -118,6 +118,7 @@
                 <div class="section-title" style="margin-top:20px;">Actions</div>
                 <button class="m-btn wide" id="trouble-open">Run Troubleshooter</button>
                 <button class="m-btn wide" id="gamepad-open">Open Gamepad Tool</button>
+                <button class="m-btn wide" id="clear-cache">Clear Download Cache</button>
                 <button class="m-btn wide" id="sign-out">Sign Out</button>
               </div>
               <div id="set-storage" class="tab-pane">
@@ -131,7 +132,7 @@
               <div id="set-versions" class="tab-pane">
                 <div class="warn-box" style="background:#4a2f05;">You&rsquo;re most likely mistaken here — to download and install different versions, open the launcher&rsquo;s Home page and click the Profile Edit pencil icon.</div>
                 <div class="field-label">Package name</div>
-                <input class="m-field" id="ver-package" value="com.mojang.minecraftpe" />
+                <input class="m-field" id="ver-package" value="com.google.android.gm" />
                 <button class="m-btn" id="ver-fetch" style="margin:8px 0 16px;">Fetch available versions</button>
                 <div class="field-label">Virtual Version Code</div>
                 <div class="row-gap">
@@ -214,6 +215,7 @@
           Minecraft Trial on Google Play and sign in.<br /><br />
           The free Minecraft (ChromeOS) Trial Mode can be enabled after sign in inside Settings.
         </p>
+        <div class="dialog-text" id="login-error" style="color:#e57373;min-height:0;display:none"></div>
         <button id="login-google" class="pixel-btn" style="width: 100%; margin: 12px 0 0;">
           <span class="btn-main">SIGN IN</span>
         </button>

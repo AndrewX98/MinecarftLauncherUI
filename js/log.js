@@ -21,10 +21,20 @@ function renderLog() {
       div.className = 'err';
       div.textContent = l;
     } else {
-      div.className = l.startsWith('[INFO]') ? '' : 'dim';
+      div.className = l.startsWith('[INFO]') || l.startsWith('[') ? '' : 'dim';
       div.textContent = l;
     }
     view.appendChild(div);
+  });
+  view.scrollTop = view.scrollHeight;
+}
+
+if (window.launcher && window.launcher.native && window.launcher.onGameLog) {
+  window.launcher.onGameLog((line) => {
+    if (!logLines.length) document.getElementById('log-view').innerHTML = ''; // clear placeholder
+    logLines.push(line);
+    if (logLines.length > 400) logLines.splice(0, logLines.length - 400);
+    renderLog();
   });
 }
 

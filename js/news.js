@@ -26,9 +26,7 @@ async function loadNews() {
       }
     }
     if (text === null || text === undefined) {
-      const resp = await fetch(url);
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
-      text = await resp.text();
+      throw new Error('network unavailable');
     }
     renderNews(JSON.parse(text));
     newsPage += 1;

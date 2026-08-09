@@ -1,32 +1,10 @@
 /* ============================================================
-   versions.js: version dropdown (grouped)
+   versions.js: version dropdown (live from Google Play)
    ============================================================ */
-const versionGroups = [
+const DEFAULT_PACKAGE = 'com.google.android.gm';
+let versionGroups = [
   { label: 'LATEST', items: [
-    { id: 'latest', name: 'Latest Release' },
-    { id: 'snapshot', name: 'Latest Snapshot' }
-  ]},
-  { label: 'RELEASES', items: [
-    { id: '1.21', name: '1.21' },
-    { id: '1.20', name: '1.20' },
-    { id: '1.19', name: '1.19' },
-    { id: '1.18', name: '1.18' },
-    { id: '1.17', name: '1.17' },
-    { id: '1.16', name: '1.16' },
-    { id: '1.15', name: '1.15' },
-    { id: '1.14', name: '1.14' },
-    { id: '1.13', name: '1.13' }
-  ]},
-  { label: 'ARCHIVED', items: [
-    { id: '1.12', name: '1.12' },
-    { id: '1.11', name: '1.11' },
-    { id: '1.10', name: '1.10' },
-    { id: '1.9', name: '1.9' },
-    { id: '1.8', name: '1.8' },
-    { id: '1.7', name: '1.7' },
-    { id: '1.6', name: '1.6' },
-    { id: '1.5', name: '1.5' },
-    { id: '1.4', name: '1.4' }
+    { id: 'latest', name: 'Latest Release' }
   ]}
 ];
 
@@ -95,6 +73,32 @@ function moveHighlight(step) {
   itemEls.forEach((el) => el.classList.remove('highlighted'));
   itemEls[next].classList.add('highlighted');
   itemEls[next].scrollIntoView({ block: 'nearest' });
+}
+
+async function refreshFromPlay(pkg) {
+  try {
+    const raw = await window.launcher.native.appInfo(pkg);
+    const info = JSON.parse(raw);
+    if (!info || info.error || !info.versionCode) {
+      currentVersion = versionGroups[0].items[0];
+      comboLabel.textContent = currentVersion.name;
+      sidebarVersion.textContent = currentVersion.name;
+      return;
+    }
+    versionGroups = [
+      { label: 'LATEST', items: [
+        { id: 'latest', name: 'Latest Release' }
+      ]},
+      { label: 'PLAY STORE', items: [
+        { id: String(info.versionCode), name: info.version + ' (' + info.versionCode + ')' }
+      ]}
+    ];
+    setVersion(String(info.versionCode));
+  } catch (e) {
+    currentVersion = versionGroups[0].items[0];
+    comboLabel.textContent = currentVersion.name;
+    sidebarVersion.textContent = currentVersion.name;
+  }
 }
 
 combo.addEventListener('click', (e) => {

@@ -4,7 +4,8 @@
   "description": "A simple Electron app",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build:native": "bash native/build.sh"
   },
   "devDependencies": {
     "electron": "^31.0.0"

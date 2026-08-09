@@ -14,11 +14,22 @@ settingsOpts.forEach((id) => {
 let dataDir = '';
 
 async function refreshDataDir() {
-  if (window.launcher && window.launcher.getDataDir) {
+  if (window.launcher && window.launcher.native) {
     try {
-      dataDir = await window.launcher.getDataDir();
+      if (await window.launcher.native.ready()) {
+        dataDir = await window.launcher.native.getDataDir();
+      }
     } catch (e) {
       dataDir = '';
+    }
+  }
+  if (!dataDir) {
+    if (window.launcher && window.launcher.getDataDir) {
+      try {
+        dataDir = await window.launcher.getDataDir();
+      } catch (e) {
+        dataDir = '';
+      }
     }
   }
   if (!dataDir) {
@@ -46,6 +57,31 @@ function refreshFolderPage() {
 document.getElementById('open-data-dir').addEventListener('click', openDataDir);
 document.getElementById('open-folder-btn').addEventListener('click', openDataDir);
 
+/* Clear downloaded APKs + extracted dirs */
+document.getElementById('clear-cache').addEventListener('click', async () => {
+  const btn = document.getElementById('clear-cache');
+  btn.disabled = true;
+  btn.textContent = 'Clearing...';
+  try {
+    let res = { removed: 0 };
+    if (window.launcher && window.launcher.native && window.launcher.native.clearCache) {
+      res = await window.launcher.native.clearCache();
+    }
+    localStorage.removeItem('installed-extract-dir');
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith('mod-installed-') || k.startsWith('m-installed-'))
+      .forEach((k) => localStorage.removeItem(k));
+    btn.textContent = 'Cleared ' + res.removed + ' item(s)';
+    updatePlayText();
+  } catch (e) {
+    btn.textContent = 'Failed';
+  }
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = 'Clear Download Cache';
+  }, 2000);
+});
+
 /* About */
 (function () {
   const aboutV = document.getElementById('about-version');
@@ -54,17 +90,24 @@ document.getElementById('open-folder-btn').addEventListener('click', openDataDir
   if (aboutE && window.appInfo) aboutE.textContent = window.appInfo.version;
 })();
 
-/* Settings > Versions */
-document.getElementById('ver-fetch').addEventListener('click', () => {
+/* Settings > Versions: fetch the real current version from Play */
+document.getElementById('ver-fetch').addEventListener('click', async () => {
   const box = document.getElementById('ver-listing');
   box.innerHTML = '';
-  const list = ['1.21.1', '1.21.0', '1.20.1', '1.20.0', '1.19.70', '1.19.60', '1.19.0', '1.18.0'];
-  ['x86_64', 'arm64-v8a'].forEach((abi) => {
-    list.forEach((v) => {
-      const row = document.createElement('div');
-      row.className = 't-item ok';
-      row.textContent = v + ' (' + abi + ')';
-      box.appendChild(row);
-    });
-  });
+  box.textContent = 'Fetching...';
+  const pkg = (document.getElementById('ver-package').value || DEFAULT_PACKAGE).trim();
+  try {
+    const info = JSON.parse(await window.launcher.native.appInfo(pkg));
+    if (info.error) {
+      box.textContent = 'Error: ' + info.error;
+      return;
+    }
+    box.innerHTML = '';
+    const row = document.createElement('div');
+    row.className = 't-item ok';
+    row.textContent = info.version + ' (versionCode ' + info.versionCode + ')';
+    box.appendChild(row);
+  } catch (e) {
+    box.textContent = 'Failed to fetch: ' + (e && e.message || e);
+  }
 });
