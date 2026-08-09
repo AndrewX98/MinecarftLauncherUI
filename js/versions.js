@@ -1,7 +1,7 @@
 /* ============================================================
    versions.js: version dropdown (live from Google Play)
    ============================================================ */
-const DEFAULT_PACKAGE = 'com.google.android.gm';
+const DEFAULT_PACKAGE = 'com.mojang.minecraftpe';
 let versionGroups = [
   { label: 'LATEST', items: [
     { id: 'latest', name: 'Latest Release' }
